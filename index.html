@@ -1,139 +1,883 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Câu hỏi dễ thương</title>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Pacifico', cursive;
-      background: radial-gradient(ellipse at bottom, #0d1b2a 0%, #000000 100%);
-      overflow: hidden;
-      color: #fff;
-      text-align: center;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Sâm Lốc Pro - Hiệu Ứng Mượt Mà</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0; padding: 0;
+            user-select: none; -webkit-user-select: none;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
 
-    #question {
-      font-size: 48px;
-      margin-top: 100px;
-      text-shadow: 2px 2px 4px #fff;
-    }
+        body, html {
+            width: 100%; height: 100%;
+            overflow: hidden; background-color: #000; color: #fff;
+        }
 
-    .btn {
-      padding: 20px 40px;
-      font-size: 32px;
-      border: none;
-      border-radius: 50px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-      cursor: pointer;
-      transition: transform 0.3s ease;
-      position: absolute;
-      z-index: 2;
-    }
+        #portrait-warning {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #111; z-index: 9999; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center; padding: 20px;
+        }
 
-    .btn:hover {
-      transform: scale(1.1) rotate(-2deg);
-    }
+        @media screen and (orientation: portrait) {
+            #portrait-warning { display: flex; }
+        }
 
-    #btnYes {
-      background-color: #ff69b4;
-      color: white;
-      left: 20%;
-      top: 300px;
-    }
+        .screen { display: none; width: 100vw; height: 100vh; position: relative; background-size: cover; background-position: center; }
+        .screen.active { display: flex; }
 
-    #btnNo {
-      background-color: #87ceeb;
-      color: white;
-      left: 70%;
-      top: 300px;
-    }
+        /* --- Auth Screen --- */
+        #auth-screen { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); justify-content: center; align-items: center; }
+        .auth-card {
+            background: rgba(20, 30, 48, 0.9); border: 2px solid #f39c12; border-radius: 16px;
+            padding: 24px 32px; width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px); text-align: center;
+        }
+        .auth-card h2 { color: #f1c40f; margin-bottom: 20px; font-size: 24px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .tab-buttons { display: flex; margin-bottom: 20px; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 4px; }
+        .tab-btn { flex: 1; padding: 8px; border: none; background: transparent; color: #aaa; font-weight: bold; cursor: pointer; border-radius: 6px; }
+        .tab-btn.active { background: #f39c12; color: #111; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; font-size: 12px; color: #ddd; margin-bottom: 5px; }
+        .input-group input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid #444; background: rgba(255,255,255,0.1); color: #fff; outline: none; }
+        .btn-primary { width: 100%; padding: 12px; border: none; border-radius: 8px; background: linear-gradient(180deg, #f1c40f, #d35400); color: #fff; font-weight: bold; font-size: 16px; cursor: pointer; }
 
-    #message {
-      font-size: 40px;
-      margin-top: 80px;
-      z-index: 2;
-      position: relative;
-      white-space: pre-line;
-    }
+        /* --- Lobby Screen (Redesigned like image) --- */
+        #lobby-screen { background: #0f172a; flex-direction: column; padding: 15px 30px; }
+        .lobby-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(241, 196, 15, 0.3); padding-bottom: 10px; }
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .user-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #f1c40f; background: #34495e; display: flex; justify-content: center; align-items: center; font-weight: bold; color: #f1c40f; }
+        
+        .lobby-content { flex: 1; display: flex; gap: 30px; margin-top: 20px; align-items: flex-start; justify-content: center; }
+        
+        .lobby-bet-container {
+            background: #111e3b;
+            padding: 30px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
 
-    .star {
-      position: absolute;
-      background: white;
-      border-radius: 50%;
-      animation: twinkle 2s infinite ease-in-out;
-    }
+        .bet-row { display: flex; align-items: center; gap: 40px; }
+        
+        .table-icon {
+            width: 80px; height: 40px; border-radius: 4px;
+            transform: skewX(-20deg); box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+        }
+        .table-brown { background: #a0522d; border: 2px solid #cd853f; border-bottom: 4px solid #5c2e0b; }
+        .table-green { background: #32cd32; border: 2px solid #b8860b; border-bottom: 4px solid #8b6508; }
+        .table-blue  { background: #00bfff; border: 2px solid #b8860b; border-bottom: 4px solid #8b6508; }
 
-    @keyframes twinkle {
-      0%, 100% { opacity: 0.3; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.3); }
-    }
-  </style>
+        .bet-options { display: flex; gap: 30px; }
+        .bet-label { display: flex; align-items: center; gap: 10px; color: #8ba3c7; font-size: 16px; font-weight: bold; cursor: pointer; width: 90px; }
+        .bet-label input { display: none; }
+        
+        .custom-radio {
+            width: 22px; height: 22px; border: 2px solid #1e3a8a; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; transition: all 0.2s;
+        }
+        
+        .bet-label input:checked + .custom-radio { border-color: #0f172a; }
+        .bet-label input:checked + .custom-radio::after {
+            content: '✔'; color: #39ff14; font-size: 24px; font-weight: 900;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8); margin-bottom: 5px; margin-left: 5px;
+        }
+        .bet-label input:checked ~ .bet-text { color: #fff; }
+
+        .lobby-actions { width: 220px; display: flex; flex-direction: column; gap: 15px; }
+
+        /* --- Game Table Screen --- */
+        #game-screen { background: radial-gradient(circle, #1a3c27 0%, #0d1f14 100%); flex-direction: column; position: relative; }
+        .game-header { position: absolute; top: 10px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+        .header-btn { width: 38px; height: 38px; border-radius: 50%; background: radial-gradient(circle, #2980b9, #1a5276); border: 2px solid #5dade2; color: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 18px; }
+        .table-info { background: rgba(0, 0, 0, 0.6); padding: 5px 15px; border-radius: 15px; font-size: 13px; color: #f1c40f; border: 1px solid rgba(241, 196, 15, 0.3); }
+
+        .poker-table {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 82vw; height: 60vh; background: #0f5c3e; border: 12px solid #b37d14;
+            border-radius: 200px; box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 0 25px rgba(0,0,0,0.9);
+        }
+        .poker-table-inner { position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; border: 2px solid rgba(241, 196, 15, 0.4); border-radius: 180px; pointer-events: none; }
+
+        .player-seat { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 5; width: 90px; }
+        .seat-south { bottom: -20px; left: 50%; transform: translateX(-50%); }
+        .seat-east  { right: -35px; top: 40%; transform: translateY(-50%); }
+        .seat-north-east { top: -25px; right: 20%; }
+        .seat-north-west { top: -25px; left: 20%; }
+        .seat-west  { left: -35px; top: 40%; transform: translateY(-50%); }
+
+        .avatar-box { position: relative; width: 64px; height: 64px; }
+        .avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #f1c40f; background: #2c3e50; display: flex; justify-content: center; align-items: center; font-size: 24px; overflow: hidden; position: relative; z-index: 2; }
+        .host-crown { position: absolute; top: -12px; left: -8px; font-size: 20px; transform: rotate(-25deg); z-index: 4; }
+        .player-name { background: rgba(0,0,0,0.7); padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-top: 4px; color: #fff; max-width: 90px; overflow: hidden; text-overflow: ellipsis; text-align: center; }
+        .player-chips { color: #f1c40f; font-size: 11px; font-weight: bold; }
+        .ready-badge { display: none; position: absolute; top: -5px; right: -5px; background: #27ae60; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; align-items: center; justify-content: center; border: 2px solid white; z-index: 4; }
+        .player-seat.is-ready .ready-badge { display: flex; }
+        .bao-mot-badge { display: none; position: absolute; bottom: -5px; right: -5px; background: #e74c3c; color: white; border-radius: 10px; padding: 2px 6px; font-size: 10px; font-weight: bold; z-index: 5; animation: pulse 1s infinite; }
+        .player-seat.is-bao-mot .bao-mot-badge { display: block; }
+
+        .timer-ring { position: absolute; top: -5px; left: -5px; width: 74px; height: 74px; z-index: 1; display: none; }
+        .timer-ring circle { fill: transparent; stroke: #f39c12; stroke-width: 5; stroke-dasharray: 207; stroke-dashoffset: 0; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dashoffset 1s linear; }
+        .player-seat.active-turn .timer-ring { display: block; }
+
+        .center-area { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 8; }
+        .btn-center-start { padding: 12px 35px; font-size: 18px; font-weight: bold; color: #fff; background: linear-gradient(180deg, #27ae60, #1e8449); border: 2px solid #2ecc71; border-radius: 25px; cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,0.6); text-transform: uppercase; animation: pulse 1.5s infinite; display: none; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.06); } 100% { transform: scale(1); } }
+
+        /* --- Smooth Card Animations --- */
+        .card { width: 58px; height: 84px; border-radius: 5px; box-shadow: 0 3px 6px rgba(0,0,0,0.5); background-size: cover; background-position: center; cursor: pointer; transition: transform 0.15s ease; position: relative; background-color: #fff; }
+        .card.selected { transform: translateY(-18px) !important; box-shadow: 0 8px 18px rgba(241, 196, 15, 0.8); border: 2px solid #f1c40f; }
+        
+        .played-cards-container { 
+            display: flex; gap: -20px; justify-content: center; min-height: 90px; 
+            transition: opacity 0.4s ease; /* Hiệu ứng dọn bài mờ dần */
+        }
+        
+        @keyframes flyFromBottom {
+            0% { transform: translateY(150px) scale(0.5); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .played-cards-container .card {
+            animation: flyFromBottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .my-hand-container { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; z-index: 12; }
+        .my-hand { display: flex; margin-bottom: 45px; }
+        .my-hand .card { margin-left: -24px; }
+        .my-hand .card:first-child { margin-left: 0; }
+
+        /* --- Actions --- */
+        .action-bar { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; z-index: 15; }
+        .btn-action { padding: 10px 22px; border-radius: 20px; border: none; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); color: white; }
+        .btn-play { background: linear-gradient(180deg, #e67e22, #d35400); }
+        .btn-pass { background: linear-gradient(180deg, #7f8c8d, #34495e); }
+        .btn-ready { background: linear-gradient(180deg, #27ae60, #2f9258); }
+        .btn-bao-sam { background: linear-gradient(180deg, #e74c3c, #c0392b); } /* Đổi màu nút Báo Sâm */
+
+        .status-toast { position: absolute; top: 18%; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.88); color: #f1c40f; padding: 10px 25px; border-radius: 20px; border: 1px solid #f1c40f; font-weight: bold; font-size: 15px; z-index: 30; display: none; text-align: center; }
+
+        #countdown-modal { display: none !important; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.75); z-index: 999; justify-content: center; align-items: center; pointer-events: none; }
+        #countdown-modal.active { display: flex !important; pointer-events: auto; }
+        .countdown-number { font-size: 120px; font-weight: 900; color: #f1c40f; text-shadow: 0 0 30px rgba(241, 196, 15, 0.8); }
+    </style>
 </head>
 <body>
 
-  <div id="question">Cậu có muốn làm mẹ tớ không?</div>
-  <button id="btnYes" class="btn">Có</button>
-  <button id="btnNo" class="btn">Không</button>
-  <div id="message"></div>
+    <div id="portrait-warning">
+        <h2>🔄 Vui lòng xoay ngang màn hình</h2>
+        <p style="margin-top:10px; color:#aaa;">Trải nghiệm Sâm Lốc tốt nhất ở chế độ xoay ngang màn hình.</p>
+    </div>
 
-  <script>
-    // Tạo bầu trời sao
-    for (let i = 0; i < 100; i++) {
-      const star = document.createElement('div');
-      const size = Math.random() * 3 + 1;
-      star.className = 'star';
-      star.style.width = `${size}px`;
-      star.style.height = `${size}px`;
-      star.style.top = `${Math.random() * window.innerHeight}px`;
-      star.style.left = `${Math.random() * window.innerWidth}px`;
-      star.style.animationDuration = `${Math.random() * 3 + 1}s`;
-      document.body.appendChild(star);
-    }
+    <!-- Auth Screen -->
+    <div id="auth-screen" class="screen active">
+        <div class="auth-card">
+            <h2>Sâm Lốc Pro</h2>
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchAuthTab('login')">Đăng Nhập</button>
+                <button class="tab-btn" onclick="switchAuthTab('register')">Đăng Ký</button>
+            </div>
+            <form id="auth-form" onsubmit="handleAuth(event)">
+                <div class="input-group">
+                    <label>Tên tài khoản (Viết liền không dấu)</label>
+                    <input type="text" id="auth-username" required placeholder="nhaptennguoichoi" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>Mật khẩu</label>
+                    <input type="password" id="auth-password" required placeholder="******">
+                </div>
+                <button type="submit" class="btn-primary" id="auth-submit-btn">Đăng Nhập</button>
+            </form>
+        </div>
+    </div>
 
-    let yesClickCount = 0;
-    let warningCount = 0;
-    const btnYes = document.getElementById("btnYes");
-    const btnNo = document.getElementById("btnNo");
-    const question = document.getElementById("question");
-    const message = document.getElementById("message");
+    <!-- Lobby Screen (Redesigned like image) -->
+    <div id="lobby-screen" class="screen">
+        <div class="lobby-header">
+            <div class="user-info">
+                <div class="user-avatar" id="lobby-avatar">U</div>
+                <div>
+                    <div id="lobby-username" style="font-weight:bold; font-size:16px;">Player</div>
+                    <div style="font-size:12px; color:#f1c40f;">💰 <span id="lobby-coins">100m</span> Xu</div>
+                </div>
+            </div>
+            <button class="btn-action btn-pass" onclick="logout()">Đăng Xuất</button>
+        </div>
 
-    btnYes.addEventListener("click", () => {
-      yesClickCount++;
-      const x = Math.random() * window.innerWidth * 0.8;
-      const y = Math.random() * window.innerHeight * 0.8;
-      btnYes.style.left = `${x}px`;
-      btnYes.style.top = `${y}px`;
+        <div class="lobby-content">
+            <!-- Bet Grid -->
+            <div class="lobby-bet-container">
+                <!-- Row 1: Brown -->
+                <div class="bet-row">
+                    <div class="table-icon table-brown"></div>
+                    <div class="bet-options">
+                        <label class="bet-label"><input type="radio" name="bet_amount" value="5" checked> <div class="custom-radio"></div> <span class="bet-text">5 xu</span></label>
+                        <label class="bet-label"><input type="radio" name="bet_amount" value="10"> <div class="custom-radio"></div> <span class="bet-text">10 xu</span></label>
+                        <label class="bet-label"><input type="radio" name="bet_amount" value="25"> <div class="custom-radio"></div> <span class="bet-text">25 xu</span></label>
+                        <label class="bet-label"><input type="radio" name="bet_amount" value="50"> <div class="custom-radio"></div> <span class="bet-text">50 xu</span></label>
+                    </div>
+                </div>
+                <!-- Row 2: Green -->
+                <div class="bet-row">
+                    <div class="table-icon table-green"></div>
+                    <div class="bet-options">
+                        <label class="bet-label"><input type="radio" name="bet_amount" value="100"> <div class="custom-radio"></div> <span class="bet-text">100 xu</span></label>
+                        <label class="bet-label"><input type="radio" name="bet_amount" value="250"> <div class="custom-radio"></div> <span class="bet-text">250 xu</span></label>
+                        <label class="bet-label"><input type="radio" name="bet_amount" value="500"> <div class="custom-radio"></div> <span class="bet-text">500 xu</span></label>
+                        <label class="bet-label"><input type="radio" name="bet_amount" value="1000"> <div class="custom-radio"></div> <span class="bet-text">1000 xu</span></label>
+                    </div>
+                </div>
+                <!-- Row 3: Blue -->
+                <div class="bet-row">
+                    <div class="table-icon table-blue"></div>
+                    <div class="bet-options">
+                        <label class="bet-label"><input type="radio" name="bet_amount" value="2500"> <div class="custom-radio"></div> <span class="bet-text">2500 xu</span></label>
+                        <label class="bet-label"><input type="radio" name="bet_amount" value="5000"> <div class="custom-radio"></div> <span class="bet-text">5000 xu</span></label>
+                        <label class="bet-label"><input type="radio" name="bet_amount" value="10000"> <div class="custom-radio"></div> <span class="bet-text">10k xu</span></label>
+                        <label class="bet-label"><input type="radio" name="bet_amount" value="25000"> <div class="custom-radio"></div> <span class="bet-text">25k xu</span></label>
+                    </div>
+                </div>
+            </div>
 
-      if (yesClickCount === 3) {
-        yesClickCount = 0;
-        warningCount++;
-        btnYes.style.display = "none";
-        btnNo.style.display = "none";
-        question.style.display = "none";
+            <div class="lobby-actions">
+                <button class="btn-primary" onclick="createRoom()">Tạo Phòng Online</button>
+                <button class="btn-primary" style="background: linear-gradient(180deg, #2980b9, #1f618d);" onclick="playWithBots()">Chơi Với Máy (Bot)</button>
+            </div>
+        </div>
+    </div>
 
-        const lines = Array(warningCount).fill("Cậu đừng cố chấp muốn làm mẹ tớ nữa.").join("\n");
-        message.textContent = lines;
+    <!-- Game Table Screen -->
+    <div id="game-screen" class="screen">
+        <div class="game-header">
+            <div style="display:flex; gap:10px; align-items:center;">
+                <div class="header-btn" onclick="leaveRoom()">←</div>
+                <div class="table-info" id="table-info-text">Sâm Lốc - Cược: 5 xu</div>
+            </div>
+        </div>
 
-        setTimeout(() => {
-          btnYes.style.display = "inline-block";
-          btnNo.style.display = "inline-block";
-          question.style.display = "block";
-          message.textContent = "";
-        }, 3000); // Hiển thị đúng 3 giây
-      }
-    });
+        <div class="status-toast" id="status-toast">Thông báo</div>
 
-    btnNo.addEventListener("click", () => {
-      message.textContent = "Đúng rồi cậu không phải mẹ tớ";
-      btnYes.style.display = "none";
-      btnNo.style.display = "none";
-      question.style.display = "none";
-    });
-  </script>
+        <div class="poker-table">
+            <div class="poker-table-inner"></div>
 
+            <div class="player-seat seat-south" id="seat-0">
+                <div class="avatar-box">
+                    <div class="host-crown" id="crown-0" style="display:none;">👑</div>
+                    <div class="avatar-img" id="avatar-0">P1</div>
+                    <div class="ready-badge" id="ready-0">✓</div>
+                    <div class="bao-mot-badge" id="baomot-0">BÁO 1</div>
+                    <svg class="timer-ring"><circle cx="37" cy="37" r="33" id="timer-circle-0"></circle></svg>
+                </div>
+                <div class="player-name" id="name-0">Player 1</div>
+                <div class="player-chips" id="chips-0">1k</div>
+            </div>
+            <div class="player-seat seat-east" id="seat-1">
+                <div class="avatar-box">
+                    <div class="host-crown" id="crown-1" style="display:none;">👑</div>
+                    <div class="avatar-img" id="avatar-1">P2</div>
+                    <div class="ready-badge" id="ready-1">✓</div>
+                    <div class="bao-mot-badge" id="baomot-1">BÁO 1</div>
+                    <svg class="timer-ring"><circle cx="37" cy="37" r="33" id="timer-circle-1"></circle></svg>
+                </div>
+                <div class="player-name" id="name-1">Ghế Trống</div>
+                <div class="player-chips" id="chips-1">--</div>
+            </div>
+            <div class="player-seat seat-north-east" id="seat-2">
+                <div class="avatar-box">
+                    <div class="host-crown" id="crown-2" style="display:none;">👑</div>
+                    <div class="avatar-img" id="avatar-2">P3</div>
+                    <div class="ready-badge" id="ready-2">✓</div>
+                    <div class="bao-mot-badge" id="baomot-2">BÁO 1</div>
+                    <svg class="timer-ring"><circle cx="37" cy="37" r="33" id="timer-circle-2"></circle></svg>
+                </div>
+                <div class="player-name" id="name-2">Ghế Trống</div>
+                <div class="player-chips" id="chips-2">--</div>
+            </div>
+            <div class="player-seat seat-north-west" id="seat-3">
+                <div class="avatar-box">
+                    <div class="host-crown" id="crown-3" style="display:none;">👑</div>
+                    <div class="avatar-img" id="avatar-3">P4</div>
+                    <div class="ready-badge" id="ready-3">✓</div>
+                    <div class="bao-mot-badge" id="baomot-3">BÁO 1</div>
+                    <svg class="timer-ring"><circle cx="37" cy="37" r="33" id="timer-circle-3"></circle></svg>
+                </div>
+                <div class="player-name" id="name-3">Ghế Trống</div>
+                <div class="player-chips" id="chips-3">--</div>
+            </div>
+            <div class="player-seat seat-west" id="seat-4">
+                <div class="avatar-box">
+                    <div class="host-crown" id="crown-4" style="display:none;">👑</div>
+                    <div class="avatar-img" id="avatar-4">P5</div>
+                    <div class="ready-badge" id="ready-4">✓</div>
+                    <div class="bao-mot-badge" id="baomot-4">BÁO 1</div>
+                    <svg class="timer-ring"><circle cx="37" cy="37" r="33" id="timer-circle-4"></circle></svg>
+                </div>
+                <div class="player-name" id="name-4">Ghế Trống</div>
+                <div class="player-chips" id="chips-4">--</div>
+            </div>
+
+            <div class="center-area">
+                <button class="btn-center-start" id="btn-host-start" onclick="hostStartGame()">BẮT ĐẦU</button>
+                <div class="played-cards-container" id="played-cards-area"></div>
+            </div>
+        </div>
+
+        <div class="my-hand-container">
+            <div class="my-hand" id="my-hand-cards"></div>
+        </div>
+
+        <div class="action-bar" id="action-bar">
+            <button class="btn-action btn-ready" id="btn-ready-toggle" onclick="toggleReady()">SẴN SÀNG</button>
+            <button class="btn-action btn-bao-sam" id="btn-bao-sam" style="display:none;" onclick="baoSamAction(true)">BÁO SÂM</button>
+            <button class="btn-action btn-pass" id="btn-huy-sam" style="display:none;" onclick="baoSamAction(false)">BỎ BÁO SÂM</button>
+            <button class="btn-action btn-play" id="btn-play-cards" style="display:none;" onclick="playSelectedCards()">ĐÁNH</button>
+            <button class="btn-action btn-pass" id="btn-pass-turn" style="display:none;" onclick="passTurn()">BỎ LƯỢT</button>
+        </div>
+    </div>
+
+    <div id="countdown-modal">
+        <div class="countdown-number" id="countdown-num">5</div>
+    </div>
+
+    <script>
+        function formatCurrency(num) {
+            if (num >= 1e12) return (num / 1e12).toFixed(1).replace(/\.0$/, '') + 't';
+            if (num >= 1e6)  return (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'm';
+            if (num >= 1e3)  return (num / 1e3).toFixed(1).replace(/\.0$/, '') + 'k';
+            return num.toString();
+        }
+
+        const SUIT_CODES = { '♠': 'S', '♣': 'C', '♦': 'D', '♥': 'H' };
+        const RANK_CODES = { '3':'3', '4':'4', '5':'5', '6':'6', '7':'7', '8':'8', '9':'9', '10':'0', 'J':'J', 'Q':'Q', 'K':'K', 'A':'A', '2':'2' };
+
+        function getCardImageUrl(rank, suit) {
+            return `https://deckofcardsapi.com/static/img/${RANK_CODES[rank]}${SUIT_CODES[suit]}.png`;
+        }
+
+        const SUITS = ['♠', '♣', '♦', '♥'];
+        const RANKS = ['3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A', '2'];
+
+        let currentUser = null;
+        let authMode = 'login';
+        let currentRoom = null;
+        let isBotMode = false;
+        let turnTimer = null;
+        let turnTimeLeft = 30;
+        let selectedCards = [];
+        let lastPlayedCombo = null; 
+        let lastWinnerIndex = null; 
+
+        function getStoredUsers() { return JSON.parse(localStorage.getItem('samloc_users') || '{}'); }
+        function saveStoredUsers(users) { localStorage.setItem('samloc_users', JSON.stringify(users)); }
+
+        /* Auth */
+        function switchAuthTab(mode) {
+            authMode = mode;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('auth-submit-btn').innerText = mode === 'login' ? 'Đăng Nhập' : 'Đăng Ký';
+            event.target.classList.add('active');
+        }
+
+        function handleAuth(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('auth-username').value.trim();
+            const passwordInput = document.getElementById('auth-password').value.trim();
+
+            if (!/^[a-zA-Z0-9]+$/.test(usernameInput)) { alert('Tên đăng ký phải viết liền không dấu!'); return; }
+
+            const users = getStoredUsers();
+            if (authMode === 'register') {
+                if (users[usernameInput]) { alert('Tên tài khoản này đã tồn tại!'); return; }
+                users[usernameInput] = { username: usernameInput, password: passwordInput, coins: 100000000 };
+                saveStoredUsers(users); alert('Đăng ký thành công!'); switchAuthTab('login');
+            } else {
+                if (!users[usernameInput] || users[usernameInput].password !== passwordInput) {
+                    alert('Tên đăng nhập hoặc mật khẩu không đúng!'); return;
+                }
+                currentUser = users[usernameInput]; enterLobby();
+            }
+        }
+
+        function logout() { currentUser = null; showScreen('auth-screen'); }
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        /* Lobby */
+        function enterLobby() {
+            showScreen('lobby-screen');
+            document.getElementById('lobby-username').innerText = currentUser.username;
+            document.getElementById('lobby-avatar').innerText = currentUser.username.charAt(0).toUpperCase();
+            document.getElementById('lobby-coins').innerText = formatCurrency(currentUser.coins);
+        }
+
+        function getSelectedBet() {
+            const selected = document.querySelector('input[name="bet_amount"]:checked');
+            return selected ? parseInt(selected.value) : 5;
+        }
+
+        function createRoom() {
+            isBotMode = false; lastWinnerIndex = null;
+            const betAmount = getSelectedBet();
+            currentRoom = {
+                id: Math.floor(1000 + Math.random() * 9000), host: currentUser.username, bet: betAmount,
+                players: [{ name: currentUser.username, coins: currentUser.coins, isHost: true, isReady: true, cards: [], isBaoSam: false, hasPassed: false }],
+                state: 'waiting', currentTurn: 0, samPlayer: null, lastCardPlayerIndex: null
+            };
+            setupGameTable();
+        }
+
+        function playWithBots() {
+            isBotMode = true; lastWinnerIndex = null;
+            const betAmount = getSelectedBet();
+            currentRoom = {
+                id: 8888, host: currentUser.username, bet: betAmount,
+                players: [
+                    { name: currentUser.username, coins: currentUser.coins, isHost: true, isReady: true, isBot: false, cards: [], isBaoSam: false, hasPassed: false },
+                    { name: 'Bot_Nam', coins: 10000000, isHost: false, isReady: true, isBot: true, cards: [], isBaoSam: false, hasPassed: false },
+                    { name: 'Bot_An', coins: 10000000, isHost: false, isReady: true, isBot: true, cards: [], isBaoSam: false, hasPassed: false },
+                    { name: 'Bot_Bình', coins: 10000000, isHost: false, isReady: true, isBot: true, cards: [], isBaoSam: false, hasPassed: false }
+                ],
+                state: 'waiting', currentTurn: 0, samPlayer: null, lastCardPlayerIndex: null
+            };
+            setupGameTable();
+        }
+
+        function leaveRoom() { clearInterval(turnTimer); showScreen('lobby-screen'); }
+
+        function setupGameTable() {
+            showScreen('game-screen');
+            let displayBet = formatCurrency(currentRoom.bet);
+            if (currentRoom.bet >= 10000) displayBet = (currentRoom.bet/1000) + 'k'; // Format 10k xu match image
+            document.getElementById('table-info-text').innerText = `Sâm Lốc - Cược: ${displayBet} xu`;
+            
+            updateSeatsUI(); checkReadyAndStartCondition();
+        }
+
+        function updateSeatsUI() {
+            for (let i = 0; i < 5; i++) {
+                const seatElem = document.getElementById(`seat-${i}`);
+                const player = currentRoom.players[i];
+
+                if (player) {
+                    document.getElementById(`name-${i}`).innerText = player.name;
+                    document.getElementById(`chips-${i}`).innerText = formatCurrency(player.coins);
+                    document.getElementById(`avatar-${i}`).innerText = player.name.charAt(0).toUpperCase();
+                    document.getElementById(`crown-${i}`).style.display = player.isHost ? 'block' : 'none';
+                    if (player.isReady) seatElem.classList.add('is-ready'); else seatElem.classList.remove('is-ready');
+                    if (player.cards.length === 1) seatElem.classList.add('is-bao-mot'); else seatElem.classList.remove('is-bao-mot');
+                } else {
+                    document.getElementById(`name-${i}`).innerText = 'Ghế Trống';
+                    document.getElementById(`chips-${i}`).innerText = '--';
+                    document.getElementById(`avatar-${i}`).innerText = '+';
+                    document.getElementById(`crown-${i}`).style.display = 'none';
+                    seatElem.classList.remove('is-ready', 'is-bao-mot');
+                }
+            }
+        }
+
+        function toggleReady() {
+            const myPlayer = currentRoom.players.find(p => p.name === currentUser.username);
+            if (myPlayer && !myPlayer.isHost) {
+                myPlayer.isReady = !myPlayer.isReady;
+                document.getElementById('btn-ready-toggle').innerText = myPlayer.isReady ? 'HUỶ SẴN SÀNG' : 'SẴN SÀNG';
+                updateSeatsUI(); checkReadyAndStartCondition();
+            }
+        }
+
+        function checkReadyAndStartCondition() {
+            if (currentRoom.state !== 'waiting') return;
+            const allReady = currentRoom.players.every(p => p.isReady);
+            const isMeHost = currentRoom.players[0].name === currentUser.username;
+            document.getElementById('btn-host-start').style.display = (isMeHost && (allReady || isBotMode) && currentRoom.players.length >= 2) ? 'block' : 'none';
+        }
+
+        /* Gameplay */
+        function hostStartGame() {
+            document.getElementById('btn-host-start').style.display = 'none';
+            document.getElementById('btn-ready-toggle').style.display = 'none';
+            currentRoom.state = 'countdown';
+
+            const modal = document.getElementById('countdown-modal');
+            const numElem = document.getElementById('countdown-num');
+            modal.classList.add('active');
+
+            let count = 5; numElem.innerText = count;
+            const timer = setInterval(() => {
+                count--;
+                if (count > 0) numElem.innerText = count;
+                else { clearInterval(timer); modal.classList.remove('active'); dealCards(); }
+            }, 1000);
+        }
+
+        function dealCards() {
+            let deck = [];
+            for (let s of SUITS) {
+                for (let r of RANKS) { deck.push({ rank: r, suit: s, val: RANKS.indexOf(r) }); }
+            }
+            deck.sort(() => Math.random() - 0.5);
+
+            currentRoom.players.forEach(p => {
+                p.cards = deck.splice(0, 10);
+                p.cards.sort((a,b) => a.val - b.val);
+                p.isBaoSam = false; p.hasPassed = false;
+            });
+
+            const winnerAnTrang = checkAnTrang();
+            if (winnerAnTrang !== null) { handleAnTrangWin(winnerAnTrang); return; }
+
+            lastPlayedCombo = null; currentRoom.lastCardPlayerIndex = null;
+            
+            // Xóa bài trên bàn và đặt lại opacity
+            const area = document.getElementById('played-cards-area');
+            area.style.opacity = '1';
+            area.innerHTML = '';
+            
+            renderMyHand();
+            startBaoSamPhase();
+        }
+
+        function checkAnTrang() {
+            for (let i = 0; i < currentRoom.players.length; i++) {
+                const cards = currentRoom.players[i].cards;
+                const twos = cards.filter(c => c.rank === '2');
+                if (twos.length === 4) return i;
+            }
+            return null;
+        }
+
+        function handleAnTrangWin(winnerIdx) {
+            const winner = currentRoom.players[winnerIdx];
+            let totalWin = 0;
+            currentRoom.players.forEach((p, idx) => {
+                if (idx !== winnerIdx) { let pay = 20 * currentRoom.bet; p.coins -= pay; totalWin += pay; }
+            });
+            winner.coins += totalWin;
+            showToast(`🎉 ${winner.name} THẮNG ĂN TRẮNG (+${formatCurrency(totalWin)} Xu)!`);
+            updateSeatsUI();
+            setTimeout(() => { currentRoom.state = 'waiting'; checkReadyAndStartCondition(); }, 3500);
+        }
+
+        function startBaoSamPhase() {
+            currentRoom.state = 'bao_sam';
+            showToast('Giai đoạn Báo Sâm (10s)!');
+            document.getElementById('btn-bao-sam').style.display = 'inline-block';
+            document.getElementById('btn-huy-sam').style.display = 'inline-block';
+
+            let timer = 10;
+            const samInterval = setInterval(() => {
+                timer--;
+                if (timer <= 0) {
+                    clearInterval(samInterval);
+                    document.getElementById('btn-bao-sam').style.display = 'none';
+                    document.getElementById('btn-huy-sam').style.display = 'none';
+
+                    const samPlayer = currentRoom.players.find(p => p.isBaoSam);
+                    if (samPlayer) {
+                        currentRoom.samPlayer = samPlayer;
+                        showToast(`🔥 ${samPlayer.name} ĐÃ BÁO SÂM!`);
+                        startTurn(currentRoom.players.indexOf(samPlayer));
+                    } else {
+                        let startPlayerIndex = 0;
+                        if (lastWinnerIndex !== null && lastWinnerIndex < currentRoom.players.length) {
+                            startPlayerIndex = lastWinnerIndex;
+                            showToast(`Người thắng ván trước (${currentRoom.players[startPlayerIndex].name}) được đi trước!`);
+                        } else {
+                            let minCardVal = 99;
+                            currentRoom.players.forEach((p, idx) => {
+                                const has3Bich = p.cards.some(c => c.rank === '3' && c.suit === '♠');
+                                if (has3Bich) startPlayerIndex = idx;
+                                else if (p.cards[0].val < minCardVal) { minCardVal = p.cards[0].val; startPlayerIndex = idx; }
+                            });
+                            showToast(`${currentRoom.players[startPlayerIndex].name} giữ bài nhỏ nhất được đi trước!`);
+                        }
+                        startTurn(startPlayerIndex);
+                    }
+                }
+            }, 1000);
+        }
+
+        function baoSamAction(choice) {
+            currentRoom.players[0].isBaoSam = choice;
+            document.getElementById('btn-bao-sam').style.display = 'none';
+            document.getElementById('btn-huy-sam').style.display = 'none';
+            showToast(choice ? 'Bạn đã Báo Sâm!' : 'Bạn Bỏ Báo Sâm');
+        }
+
+        function renderMyHand() {
+            const handContainer = document.getElementById('my-hand-cards');
+            handContainer.innerHTML = ''; selectedCards = [];
+            currentRoom.players[0].cards.forEach(card => {
+                const cardElem = document.createElement('div');
+                cardElem.className = 'card';
+                cardElem.style.backgroundImage = `url('${getCardImageUrl(card.rank, card.suit)}')`;
+                cardElem.onclick = () => toggleSelectCard(cardElem, card);
+                handContainer.appendChild(cardElem);
+            });
+            updateSeatsUI();
+        }
+
+        function toggleSelectCard(elem, card) {
+            if (elem.classList.contains('selected')) {
+                elem.classList.remove('selected'); selectedCards = selectedCards.filter(c => c !== card);
+            } else {
+                elem.classList.add('selected'); selectedCards.push(card);
+            }
+        }
+
+        function startTurn(playerIndex) {
+            currentRoom.state = 'playing'; currentRoom.currentTurn = playerIndex;
+            clearInterval(turnTimer);
+
+            for (let i = 0; i < 5; i++) {
+                const seat = document.getElementById(`seat-${i}`);
+                if (i === playerIndex) seat.classList.add('active-turn'); else seat.classList.remove('active-turn');
+            }
+
+            if (playerIndex === 0) {
+                document.getElementById('btn-play-cards').style.display = 'inline-block';
+                document.getElementById('btn-pass-turn').style.display = (!lastPlayedCombo || currentRoom.lastCardPlayerIndex === 0) ? 'none' : 'inline-block';
+            } else {
+                document.getElementById('btn-play-cards').style.display = 'none';
+                document.getElementById('btn-pass-turn').style.display = 'none';
+            }
+
+            turnTimeLeft = 30; updateTimerRingUI(playerIndex, 30);
+            turnTimer = setInterval(() => {
+                turnTimeLeft--; updateTimerRingUI(playerIndex, turnTimeLeft);
+                if (turnTimeLeft <= 0) { clearInterval(turnTimer); autoTimeoutAction(playerIndex); }
+            }, 1000);
+
+            if (isBotMode && currentRoom.players[playerIndex].isBot) {
+                setTimeout(() => botPlayTurn(playerIndex), 1800);
+            }
+        }
+
+        function autoTimeoutAction(playerIndex) {
+            if (!lastPlayedCombo || currentRoom.lastCardPlayerIndex === playerIndex) {
+                const player = currentRoom.players[playerIndex];
+                if (playerIndex === 0 && selectedCards.length > 0) playSelectedCards();
+                else if (player.cards.length > 0) {
+                    const firstCard = [player.cards[0]];
+                    executeMove(playerIndex, firstCard, parseCombo(firstCard));
+                }
+            } else passTurn();
+        }
+
+        function updateTimerRingUI(playerIndex, secondsLeft) {
+            const circle = document.getElementById(`timer-circle-${playerIndex}`);
+            if (circle) circle.style.strokeDashoffset = 207 - (secondsLeft / 30) * 207;
+        }
+
+        function parseCombo(cards) {
+            if (!cards || cards.length === 0) return null;
+            cards.sort((a,b) => a.val - b.val); const len = cards.length;
+
+            if (len === 1) return { type: 'single', val: cards[0].val, cards: cards };
+            if (len === 2 && cards[0].val === cards[1].val) return { type: 'pair', val: cards[0].val, cards: cards };
+            if (len === 3 && cards[0].val === cards[1].val && cards[1].val === cards[2].val) return { type: 'triple', val: cards[0].val, cards: cards };
+            if (len === 4 && cards[0].val === cards[1].val && cards[1].val === cards[2].val && cards[2].val === cards[3].val) return { type: 'quad', val: cards[0].val, cards: cards };
+
+            if (len >= 3) {
+                let isStraight = true;
+                for (let i = 0; i < len - 1; i++) { if (cards[i+1].val !== cards[i].val + 1) { isStraight = false; break; } }
+                if (isStraight) return { type: 'straight', val: cards[len-1].val, length: len, cards: cards };
+                if (cards[0].rank === '3' && cards[len-2].rank === 'A' && cards[len-1].rank === '2') {
+                    return { type: 'straight', val: 12, length: len, cards: cards };
+                }
+            }
+            return null;
+        }
+
+        function isValidMove(selected, lastCombo) {
+            const currentCombo = parseCombo(selected);
+            if (!currentCombo) return { valid: false, msg: 'Bộ bài chọn không hợp lệ!' };
+            if (!lastCombo) return { valid: true, combo: currentCombo };
+
+            if (currentCombo.type === 'quad') {
+                if (lastCombo.type === 'single' && lastCombo.cards[0].rank === '2') return { valid: true, combo: currentCombo, isChat: true };
+                if (lastCombo.type === 'quad' && currentCombo.val > lastCombo.val) return { valid: true, combo: currentCombo, isDe: true };
+            }
+
+            if (currentCombo.type === lastCombo.type) {
+                if (currentCombo.type === 'straight' && currentCombo.length !== lastCombo.length) return { valid: false, msg: 'Sảnh phải cùng độ dài!' };
+                if (currentCombo.val > lastCombo.val) return { valid: true, combo: currentCombo };
+            }
+
+            return { valid: false, msg: 'Bài đánh ra không đủ lớn để chặn!' };
+        }
+
+        function playSelectedCards() {
+            if (selectedCards.length === 0) return;
+            const check = isValidMove(selectedCards, lastPlayedCombo);
+            if (!check.valid) { showToast(check.msg); return; }
+
+            const nextIdx = (0 + 1) % currentRoom.players.length;
+            if (currentRoom.players[nextIdx].cards.length === 1) {
+                showToast('🚨 Chú ý: Cửa dưới BÁO MỘT! Đang đánh lá cao nhất để chặn!');
+            }
+
+            if (currentRoom.players[0].cards.length === selectedCards.length) {
+                if (selectedCards.some(c => c.rank === '2')) {
+                    showToast('⚠️ Không được đánh Heo ở lá cuối cùng (Thối Heo)!'); return;
+                }
+            }
+
+            executeMove(0, selectedCards, check.combo, check.isChat, check.isDe);
+        }
+
+        function executeMove(playerIndex, cardsToPlay, combo, isChat, isDe) {
+            if (currentRoom.samPlayer && playerIndex !== currentRoom.players.indexOf(currentRoom.samPlayer)) {
+                showToast(`💥 ${currentRoom.samPlayer.name} BỊ BẮT SÂM! Đền ván này.`);
+                handleSamFailed(currentRoom.players.indexOf(currentRoom.samPlayer), playerIndex);
+                return;
+            }
+
+            if (isDe) {
+                let deFine = 15 * currentRoom.bet;
+                currentRoom.players[currentRoom.lastCardPlayerIndex].coins -= deFine;
+                currentRoom.players[playerIndex].coins += deFine;
+                showToast(`🔥 CHẶT ĐÈ! Phạt ${formatCurrency(deFine)} Xu!`);
+            } else if (isChat) {
+                let chatFine = 10 * currentRoom.bet;
+                currentRoom.players[currentRoom.lastCardPlayerIndex].coins -= chatFine;
+                currentRoom.players[playerIndex].coins += chatFine;
+                showToast(`🗡️ CHẶT HEO! Ăn ${formatCurrency(chatFine)} Xu!`);
+            }
+
+            lastPlayedCombo = combo; currentRoom.lastCardPlayerIndex = playerIndex;
+            
+            // Xóa mờ opacity cũ nếu có, rồi render bài bay mượt mà
+            const area = document.getElementById('played-cards-area');
+            area.style.opacity = '1';
+            renderPlayedCards(cardsToPlay);
+
+            currentRoom.players[playerIndex].cards = currentRoom.players[playerIndex].cards.filter(c => !cardsToPlay.includes(c));
+            if (playerIndex === 0) renderMyHand(); else updateSeatsUI();
+
+            if (currentRoom.players[playerIndex].cards.length === 0) { handleWin(playerIndex); return; }
+            nextTurn();
+        }
+
+        function passTurn() {
+            const currentIdx = currentRoom.currentTurn;
+            currentRoom.players[currentIdx].hasPassed = true;
+            showToast(`${currentRoom.players[currentIdx].name} Bỏ lượt`);
+            nextTurn();
+        }
+
+        function botPlayTurn(botIndex) {
+            const bot = currentRoom.players[botIndex];
+            if (bot.cards.length === 0) return;
+
+            if (!lastPlayedCombo || currentRoom.lastCardPlayerIndex === botIndex) {
+                const cardToPlay = [bot.cards[0]];
+                executeMove(botIndex, cardToPlay, parseCombo(cardToPlay));
+                return;
+            }
+
+            const single = [bot.cards[0]];
+            const check = isValidMove(single, lastPlayedCombo);
+            if (check.valid) { executeMove(botIndex, single, check.combo, check.isChat, check.isDe); } 
+            else { bot.hasPassed = true; showToast(`🤖 ${bot.name} Bỏ lượt`); nextTurn(); }
+        }
+
+        function nextTurn() {
+            let next = (currentRoom.currentTurn + 1) % currentRoom.players.length;
+
+            if (currentRoom.lastCardPlayerIndex !== null) {
+                const otherPlayers = currentRoom.players.filter((p, idx) => idx !== currentRoom.lastCardPlayerIndex && p.cards.length > 0);
+                if (otherPlayers.every(p => p.hasPassed)) {
+                    lastPlayedCombo = null;
+                    currentRoom.players.forEach(p => p.hasPassed = false);
+                    const freeIdx = currentRoom.lastCardPlayerIndex;
+                    currentRoom.lastCardPlayerIndex = null;
+                    
+                    showToast(`Không ai chặn được! ${currentRoom.players[freeIdx].name} ra bài tự do.`);
+                    
+                    // Xử lý dọn bài trên bàn cực mượt (Làm mờ rồi xóa)
+                    const area = document.getElementById('played-cards-area');
+                    area.style.opacity = '0'; // Kích hoạt transition mờ dần
+                    setTimeout(() => {
+                        area.innerHTML = '';
+                        area.style.opacity = '1';
+                        startTurn(freeIdx);
+                    }, 400); // Đợi 400ms để hiệu ứng hoàn tất rồi mới cho đánh vòng mới
+                    return;
+                }
+            }
+
+            while (currentRoom.players[next].hasPassed && currentRoom.players.filter(p => !p.hasPassed).length > 1) {
+                next = (next + 1) % currentRoom.players.length;
+            }
+            startTurn(next);
+        }
+
+        function renderPlayedCards(cards) {
+            const area = document.getElementById('played-cards-area'); area.innerHTML = '';
+            cards.forEach(card => {
+                const cardElem = document.createElement('div');
+                cardElem.className = 'card';
+                cardElem.style.backgroundImage = `url('${getCardImageUrl(card.rank, card.suit)}')`;
+                area.appendChild(cardElem);
+            });
+        }
+
+        /* Settlement */
+        function handleSamFailed(samIdx, blockerIdx) {
+            clearInterval(turnTimer);
+            const samPlayer = currentRoom.players[samIdx];
+            const blocker = currentRoom.players[blockerIdx];
+            const fineAmount = 20 * currentRoom.bet * (currentRoom.players.length - 1);
+
+            samPlayer.coins -= fineAmount; blocker.coins += fineAmount;
+            updateSeatsUI();
+            showToast(`💥 BỊ BẮT SÂM! Đền ${formatCurrency(fineAmount)} Xu cho ${blocker.name}!`);
+            setTimeout(() => { currentRoom.state = 'waiting'; checkReadyAndStartCondition(); }, 3500);
+        }
+
+        function handleWin(winnerIndex) {
+            clearInterval(turnTimer);
+            lastWinnerIndex = winnerIndex;
+            const winner = currentRoom.players[winnerIndex];
+
+            let totalWinCoins = 0;
+            currentRoom.players.forEach((p, idx) => {
+                if (idx !== winnerIndex) {
+                    let remCards = p.cards.length; let fineCards = remCards;
+                    if (remCards === 10) fineCards = 15; // Cóng
+                    p.cards.forEach(c => { if (c.rank === '2') fineCards += 5; }); // Thối Heo
+                    let payAmount = fineCards * currentRoom.bet;
+                    p.coins -= payAmount; totalWinCoins += payAmount;
+                }
+            });
+
+            winner.coins += totalWinCoins;
+            if (winnerIndex === 0 && currentUser) {
+                currentUser.coins = winner.coins;
+                const users = getStoredUsers();
+                if (users[currentUser.username]) { users[currentUser.username].coins = winner.coins; saveStoredUsers(users); }
+            }
+
+            updateSeatsUI();
+            showToast(`🎉 ${winner.name} THẮNG (+${formatCurrency(totalWinCoins)} Xu)!`);
+            setTimeout(() => { currentRoom.state = 'waiting'; checkReadyAndStartCondition(); }, 3500);
+        }
+
+        /* Helpers */
+        function showToast(msg) {
+            const toast = document.getElementById('status-toast');
+            toast.innerText = msg; toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2800);
+        }
+    </script>
 </body>
 </html>
-
