@@ -1,2 +1,0 @@
-# uyenthoitha
-uyen thúi tha
